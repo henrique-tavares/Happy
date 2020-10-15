@@ -39,8 +39,6 @@ export default {
             open_on_weekends
         } = request.body;
 
-        const parsed_open_on_weekends = Boolean(open_on_weekends)
-
         const orphanagesRepository = getRepository(Orphanage);
 
         const requestImages = request.files as Express.Multer.File[];
@@ -56,7 +54,7 @@ export default {
             about,
             instructions,
             opening_hours,
-            open_on_weekends: parsed_open_on_weekends,
+            open_on_weekends: open_on_weekends === "true",
             images
         };
 
@@ -71,8 +69,8 @@ export default {
             images: Yup.array(
                 Yup.object().shape({
                     path: Yup.string().required()
-                })
-            )
+                }).required()
+            ).required().min(1)
         });
 
         await schema.validate(data, {
